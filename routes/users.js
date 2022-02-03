@@ -228,7 +228,7 @@ router.post('/list_unit_api' , async (req , res) => {
     mediumName: String,
     subjectName: String,
     boardName: String,
-    unitTopics: Array,
+    unitTopics: Map,
   });
 
 
@@ -248,5 +248,42 @@ router.post('/list_unit_api' , async (req , res) => {
   res.json(checkModel)
 
 })
+
+
+router.post('/list_edit_api' , async (req , res )=> {
+  console.log('/list_edit_api');
+  let reqData = req.body
+
+  // console.log(reqData); 
+
+  // {
+  //   boardName: 'CBSE',
+  //   className: 'class1th',
+  //   mediumName: 'English Medium',
+  //   collectionName: 'CBEMClass1thscience',
+  //   unitName: { unitName: 'Law of Motion', unitNo: '1' },
+  //   topicName: 'dsadas'
+  // }
+
+  let obj = reqData.unitNo
+
+  let x = {
+    obj : {
+      topicName:reqData['topicName'],
+      topicURL: ""
+    }
+  }
+
+  console.log(x);
+
+
+  // console.log(obj);
+  
+  
+
+  res.json('list_edit_api called')
+})
+
+
 
 module.exports = router;
