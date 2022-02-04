@@ -162,7 +162,7 @@ router.post("/create-unit-api", async (req, res) => {
     mediumName: String,
     subjectName: String,
     boardName: String,
-    unitTopics: Array,
+    unitTopics: Map,
   });
 
   // create model
@@ -250,38 +250,51 @@ router.post('/list_unit_api' , async (req , res) => {
 })
 
 
-router.post('/list_edit_api' , async (req , res )=> {
-  console.log('/list_edit_api');
-  let reqData = req.body
+router.post('/list_topic_api' , async (req , res )=> {
+  console.log('/list_topic_api\n');
 
-  // console.log(reqData); 
+  var reqData = req.body;
+  // console.log(reqData);
 
-  // {
-  //   boardName: 'CBSE',
-  //   className: 'class1th',
-  //   mediumName: 'English Medium',
-  //   collectionName: 'CBEMClass1thscience',
-  //   unitName: { unitName: 'Law of Motion', unitNo: '1' },
-  //   topicName: 'dsadas'
-  // }
+  let collectionName = reqData.collectionName;
+  let unitName = reqData.unitName;
 
-  let obj = reqData.unitNo
+  // create schema
+  var mySchema = new mongoose.Schema({
+    unitNames: Array,
+    className: String,
+    mediumName: String,
+    subjectName: String,
+    boardName: String,
+    unitTopics: Map,
+  });
 
-  let x = {
-    obj : {
-      topicName:reqData['topicName'],
-      topicURL: ""
+  // create model
+  var myModel =
+    mongoose.models[collectionName] || mongoose.model(collectionName, mySchema);
+
+    // let foundObj = await myModel.aggregate(
+    //   [{ $unwind: '$unitNames'},
+    //   { $match: {'unitNames.unitNo':unitName.unitNo}}])
+
+    let foundData = await myModel.findOne({},{unitNames:1,_id:0})
+
+    // console.log(foundData);
+
+    let foundObj = foundData.unitNames.filter(el => el.unitNo === unitName.unitNo)
+  
+    console.log(foundData);
+
+    try {
+      console.log(foundObj[0].unitTopics);
+    } catch (error) {
+      console.log(error.message);
+      console.log('No Topics Found');
     }
-  }
+    
 
-  console.log(x);
+  res.json({ message: "list_topic_api --end", success: true });
 
-
-  // console.log(obj);
-  
-  
-
-  res.json('list_edit_api called')
 })
 
 
