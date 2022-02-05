@@ -157,12 +157,25 @@ router.post("/create-unit-api", async (req, res) => {
 
   // create schema
   var mySchema = new mongoose.Schema({
-    unitNames: Array,
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
     className: String,
     mediumName: String,
     subjectName: String,
     boardName: String,
-    unitTopics: Map,
   });
 
   // create model
@@ -223,14 +236,26 @@ router.post('/list_unit_api' , async (req , res) => {
 
   // create schema
   var mySchema = new mongoose.Schema({
-    unitNames: Array,
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
     className: String,
     mediumName: String,
     subjectName: String,
     boardName: String,
-    unitTopics: Map,
   });
-
 
   // create model
   var myModel =
@@ -261,42 +286,197 @@ router.post('/list_topic_api' , async (req , res )=> {
 
   // create schema
   var mySchema = new mongoose.Schema({
-    unitNames: Array,
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
     className: String,
     mediumName: String,
     subjectName: String,
     boardName: String,
-    unitTopics: Map,
+  });
+
+
+  // create model
+  var myModel =
+    mongoose.models[collectionName] || mongoose.model(collectionName, mySchema);
+
+    let foundData = await myModel.findOne({},{unitNames:1,_id:0})
+
+    console.log(foundData);
+
+    let foundObj = foundData.unitNames.filter(el => el.unitNo === unitName.unitNo)
+
+  res.json({ message: foundObj[0], success: true });
+
+})
+
+
+router.post('/list_topic_edit_api' , async (req , res )=> {
+  console.log('/list_topic_edit_api\n');
+
+  var reqData = req.body;
+  console.log(reqData);
+
+  let collectionName = reqData.collectionName;
+  let unitName = reqData.unitDetail.unitName;
+  let topicDetails = reqData.topicDetails
+
+  // create schema
+  var mySchema = new mongoose.Schema({
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
+    className: String,
+    mediumName: String,
+    subjectName: String,
+    boardName: String,
   });
 
   // create model
   var myModel =
     mongoose.models[collectionName] || mongoose.model(collectionName, mySchema);
 
-    // let foundObj = await myModel.aggregate(
-    //   [{ $unwind: '$unitNames'},
-    //   { $match: {'unitNames.unitNo':unitName.unitNo}}])
+     
+  try {
+    let preFound = await myModel.updateOne(
+      {"unitNames.unitName": unitName,"unitNames.$": 1, },{$push:{"unitNames.$.unitTopics":topicDetails}}  )
 
-    let foundData = await myModel.findOne({},{unitNames:1,_id:0})
+    console.log("founded data")
+    console.log(preFound)
 
-    // console.log(foundData);
-
-    let foundObj = foundData.unitNames.filter(el => el.unitNo === unitName.unitNo)
+  } catch (error) {
+  console.log(  error.message);
+  }
   
-    console.log(foundData);
 
-    try {
-      console.log(foundObj[0].unitTopics);
-    } catch (error) {
-      console.log(error.message);
-      console.log('No Topics Found');
-    }
-    
-
-  res.json({ message: "list_topic_api --end", success: true });
+res.json({messsge:'list_topic_edit_api - called' })
 
 })
 
+
+
+router.post('/list_one_mark_api' , async (req , res )=> {
+  console.log('/list_one_mark_api\n');
+
+  var reqData = req.body;
+
+  let collectionName = reqData.collectionName;
+  let unitName = reqData.unitDetails.unitName;
+
+  // create schema
+  var mySchema = new mongoose.Schema({
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
+    className: String,
+    mediumName: String,
+    subjectName: String,
+    boardName: String,
+  });
+
+  // create model
+  var myModel =
+    mongoose.models[collectionName] || mongoose.model(collectionName, mySchema);
+
+    let foundData = await myModel.findOne({},{unitNames:1,_id:0})
+
+    console.log(foundData);
+
+    let foundObj = foundData.unitNames.filter(el => el.unitName === unitName)
+
+  res.json({ message: foundObj[0].unitOneMarks, success: true });
+
+})
+
+
+router.post('/list_one_edit_mark_api' , async (req , res )=> {
+  console.log('/list_one_edit_mark_api\n');
+
+  var reqData = req.body;
+  console.log(reqData);
+
+  let collectionName = reqData.collectionName;
+  let unitName = reqData.unitDetail.unitName;
+  let unitOneMarks = reqData.unitOneMarks
+
+  // create schema
+  var mySchema = new mongoose.Schema({
+    unitNames:  [
+      {
+      unitNo: String,
+      unitTopics: [
+        {
+          topicName: String,
+          topicUrl:String,
+        }
+      ],
+      unitName:String,
+      unitTwoMarks:Array,
+      unitOneMarks:Array
+    }
+  ],
+
+    className: String,
+    mediumName: String,
+    subjectName: String,
+    boardName: String,
+  });
+
+  // create model
+  var myModel =
+    mongoose.models[collectionName] || mongoose.model(collectionName, mySchema);
+
+  try {
+    let preFound = await myModel.updateOne(
+      {"unitNames.unitName": unitName,"unitNames.$": 1, },{$push:{"unitNames.$.unitOneMarks":unitOneMarks}}  )
+
+    console.log("founded data")
+    console.log(preFound)
+
+  } catch (error) {
+  console.log(  error.message);
+  }
+  
+
+res.json({messsge:'list_topic_edit_api - called' })
+
+})
 
 
 module.exports = router;
