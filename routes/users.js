@@ -432,7 +432,7 @@ router.post('/list_one_edit_mark_api' , async (req , res )=> {
   console.log(reqData);
 
   let collectionName = reqData.collectionName;
-  let unitName = reqData.unitDetail.unitName;
+  let unitName = reqData.unitDetails.unitName;
   let unitOneMarks = reqData.unitOneMarks
 
   // create schema
