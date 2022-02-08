@@ -775,5 +775,4 @@ router.post('/drop_subject_api' , async (req , res )=> {
     
 })
 
-
 module.exports = router;
